@@ -11,7 +11,6 @@ import java.util.Map;
 
 @Mixin(Sheep.class)
 public interface SheepEntityDropsAccessor {
-
     @Mutable
     @Accessor("ITEM_BY_DYE")
     static void setDrops(Map<DyeColor, ItemLike> map){

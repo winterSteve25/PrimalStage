@@ -7,14 +7,14 @@ import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class ForgingRecipeEmiRecipe implements EmiRecipe {
-    private final Identifier id;
+    private final ResourceLocation id;
     private final List<EmiIngredient> input;
     private final List<EmiIngredient> toolInput;
     private final List<EmiStack> output;
@@ -22,7 +22,7 @@ public class ForgingRecipeEmiRecipe implements EmiRecipe {
     public ForgingRecipeEmiRecipe(ForgingRecipe recipe) {
         this.id = recipe.getId();
         this.input = List.of(EmiIngredient.of(recipe.getIngredients().get(0)));
-        this.toolInput = List.of(EmiIngredient.of(Ingredient.fromTag(ModTags.MALLETS)));
+        this.toolInput = List.of(EmiIngredient.of(Ingredient.of(ModTags.MALLETS)));
         this.output = List.of(EmiStack.of(recipe.getOutput()));
     }
 
@@ -32,7 +32,7 @@ public class ForgingRecipeEmiRecipe implements EmiRecipe {
     }
 
     @Override
-    public @Nullable Identifier getId() {
+    public @Nullable ResourceLocation getId() {
         return id;
     }
 

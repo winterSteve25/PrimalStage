@@ -11,27 +11,27 @@ import me.shedaniel.rei.api.client.gui.widgets.Widgets;
 import me.shedaniel.rei.api.client.registry.display.DisplayCategory;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.util.EntryStacks;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ForgingRecipeCategory implements DisplayCategory<ForgingRecipeDisplay> {
 
-    private static final Identifier GUI = new Identifier(PrimalStage.MOD_ID, "textures/gui/rei/cutting_log.png");
+    private static final ResourceLocation GUI = new ResourceLocation(PrimalStage.MOD_ID, "textures/gui/rei/cutting_log.png");
 
     @Override
     public Renderer getIcon() {
-        return EntryStacks.of(ModBlocks.STONE_ANVIL);
+        return EntryStacks.of(ModBlocks.STONE_ANVIL.get());
     }
 
     @Override
-    public Text getTitle() {
-        return Text.translatable("primalstage.rei.forging");
+    public Component getTitle() {
+        return Component .translatable("primalstage.rei.forging");
     }
 
     @Override

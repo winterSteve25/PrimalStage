@@ -3,6 +3,7 @@ package com.nanokulon.primalstage.init;
 import com.nanokulon.primalstage.PrimalStage;
 import com.nanokulon.primalstage.recipes.*;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -17,7 +18,7 @@ public class ModRecipes {
     public static final RegistryObject<RecipeType<ForgingRecipe>> FORGING = REGISTER.register("forging", ForgingRecipe.ForgingRecipeType::new);
     public static final RegistryObject<RecipeType<KilnRecipe>> KILN = REGISTER.register("kiln", KilnRecipe.KilnRecipeType::new);
 
-    public static void init() {
-
+    public static void init(IEventBus bus) {
+        REGISTER.register(bus);
     }
 }

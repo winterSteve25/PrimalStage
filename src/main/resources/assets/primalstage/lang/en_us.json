@@ -122,5 +122,6 @@
   "emi.category.primalstage.drying_category": "Drying",
   "emi.category.primalstage.grill_category": "Grilling",
   "emi.category.primalstage.forging_category": "Forging",
-  "emi.category.primalstage.kiln_category": "Firing"
+  "emi.category.primalstage.kiln_category": "Firing",
+  "item_group.primalstage.primal_group": "Primal Stage"
 }

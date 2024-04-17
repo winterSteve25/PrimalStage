@@ -3,221 +3,245 @@ package com.nanokulon.primalstage;
 import com.nanokulon.primalstage.init.ModBlocks;
 import com.nanokulon.primalstage.init.ModItems;
 import com.nanokulon.primalstage.init.ModTags;
-import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.loot.BlockLootSubProvider;
+import net.minecraft.data.loot.LootTableProvider;
+import net.minecraft.data.tags.BiomeTagsProvider;
+import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraftforge.common.data.BlockTagsProvider;
+import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.data.event.GatherDataEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.RegistryObject;
 
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-public class PrimalStageDataGenerator implements DataGeneratorEntrypoint {
+@Mod.EventBusSubscriber(modid = PrimalStage.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+public class PrimalStageDataGenerator {
 
-    @Override
-    public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
-        fabricDataGenerator.createPack().addProvider(ModBiomeTagProvider::new);
-        fabricDataGenerator.createPack().addProvider(ModLootTablesProvider::new);
-        fabricDataGenerator.createPack().addProvider(ModMineableTagProvider::new);
-        fabricDataGenerator.createPack().addProvider(ModItemTagProvider::new);
+    @SubscribeEvent
+    public void onInitializeDataGenerator(GatherDataEvent evt) {
+        DataGenerator generator = evt.getGenerator();
+        PackOutput output = generator.getPackOutput();
+        CompletableFuture<HolderLookup.Provider> lookupProvider = evt.getLookupProvider();
+
+        generator.addProvider(evt.includeServer(), ModLootTablesProvider.create(output));
+        generator.addProvider(evt.includeServer(), new ModBiomeTagProvider(output, lookupProvider));
+        ModMineableTagProvider provider = new ModMineableTagProvider(output, lookupProvider, evt.getExistingFileHelper());
+        generator.addProvider(evt.includeServer(), provider);
+        generator.addProvider(evt.includeServer(), new ModItemTagProvider(output, lookupProvider, provider.contentsGetter()));
     }
 
-    private static class ModLootTablesProvider extends FabricBlockLootTableProvider {
-        public ModLootTablesProvider(FabricDataOutput output) {
-            super(output);
+    private static class ModLootTablesProvider extends BlockLootSubProvider {
+
+        private static LootTableProvider create(PackOutput output) {
+            return new LootTableProvider(output, Set.of(), List.of(new LootTableProvider.SubProviderEntry(ModLootTablesProvider::new, LootContextParamSets.BLOCK)));
+        }
+
+        protected ModLootTablesProvider() {
+            super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+        }
+
+        @Override
+        protected Iterable<Block> getKnownBlocks() {
+            return ModBlocks.REGISTER.getEntries().stream().map(RegistryObject::get)::iterator;
         }
 
         @Override
         public void generate() {
-            addDrop(ModBlocks.BUSH_BLOCK);
-            addDrop(ModBlocks.TWIGS_BLOCK, Items.STICK);
-            addDrop(ModBlocks.PEBBLE_BLOCK, ModItems.STONE_PEBBLE);
-            addDrop(ModBlocks.CHARCOAL_LOG);
-            addDrop(ModBlocks.KILN_BRICKS);
-            addDrop(ModBlocks.OAK_HEDGE);
-            addDrop(ModBlocks.BIRCH_HEDGE);
-            addDrop(ModBlocks.JUNGLE_HEDGE);
-            addDrop(ModBlocks.DARK_OAK_HEDGE);
-            addDrop(ModBlocks.SPRUCE_HEDGE);
-            addDrop(ModBlocks.ACACIA_HEDGE);
-            addDrop(ModBlocks.MANGROVE_HEDGE);
-            addDrop(ModBlocks.CRIMSON_HEDGE);
-            addDrop(ModBlocks.WARPED_HEDGE);
-            addDrop(ModBlocks.OAK_LATTICE);
-            addDrop(ModBlocks.BIRCH_LATTICE);
-            addDrop(ModBlocks.JUNGLE_LATTICE);
-            addDrop(ModBlocks.DARK_OAK_LATTICE);
-            addDrop(ModBlocks.SPRUCE_LATTICE);
-            addDrop(ModBlocks.ACACIA_LATTICE);
-            addDrop(ModBlocks.MANGROVE_LATTICE);
-            addDrop(ModBlocks.CRIMSON_LATTICE);
-            addDrop(ModBlocks.WARPED_LATTICE);
-            addDrop(ModBlocks.OAK_LOGS);
-            addDrop(ModBlocks.BIRCH_LOGS);
-            addDrop(ModBlocks.JUNGLE_LOGS);
-            addDrop(ModBlocks.DARK_OAK_LOGS);
-            addDrop(ModBlocks.SPRUCE_LOGS);
-            addDrop(ModBlocks.ACACIA_LOGS);
-            addDrop(ModBlocks.MANGROVE_LOGS);
-            addDrop(ModBlocks.CRIMSON_LOGS);
-            addDrop(ModBlocks.WARPED_LOGS);
-            addDrop(ModBlocks.PRIMITIVE_GRILL);
-            addDrop(ModBlocks.CUTTING_LOG);
-            addDrop(ModBlocks.STONE_ANVIL);
-            addDrop(ModBlocks.OAK_DRYING_RACK);
-            addDrop(ModBlocks.BIRCH_DRYING_RACK);
-            addDrop(ModBlocks.JUNGLE_DRYING_RACK);
-            addDrop(ModBlocks.DARK_OAK_DRYING_RACK);
-            addDrop(ModBlocks.SPRUCE_DRYING_RACK);
-            addDrop(ModBlocks.ACACIA_DRYING_RACK);
-            addDrop(ModBlocks.MANGROVE_DRYING_RACK);
-            addDrop(ModBlocks.CRIMSON_DRYING_RACK);
-            addDrop(ModBlocks.WARPED_DRYING_RACK);
-            addDrop(ModBlocks.KILN);
-            addDrop(ModBlocks.OAK_SHELF);
-            addDrop(ModBlocks.BIRCH_SHELF);
-            addDrop(ModBlocks.JUNGLE_SHELF);
-            addDrop(ModBlocks.DARK_OAK_SHELF);
-            addDrop(ModBlocks.SPRUCE_SHELF);
-            addDrop(ModBlocks.ACACIA_SHELF);
-            addDrop(ModBlocks.MANGROVE_SHELF);
-            addDrop(ModBlocks.CRIMSON_SHELF);
-            addDrop(ModBlocks.WARPED_SHELF);
-            addDrop(ModBlocks.STRAW_BLOCK);
+            this.dropSelf(ModBlocks.BUSH_BLOCK.get());
+            this.dropOther(ModBlocks.TWIGS_BLOCK.get(), Items.STICK);
+            this.dropOther(ModBlocks.PEBBLE_BLOCK.get(), ModItems.STONE_PEBBLE.get());
+            this.dropSelf(ModBlocks.CHARCOAL_LOG.get());
+            this.dropSelf(ModBlocks.KILN_BRICKS.get());
+            this.dropSelf(ModBlocks.OAK_HEDGE.get());
+            this.dropSelf(ModBlocks.BIRCH_HEDGE.get());
+            this.dropSelf(ModBlocks.JUNGLE_HEDGE.get());
+            this.dropSelf(ModBlocks.DARK_OAK_HEDGE.get());
+            this.dropSelf(ModBlocks.SPRUCE_HEDGE.get());
+            this.dropSelf(ModBlocks.ACACIA_HEDGE.get());
+            this.dropSelf(ModBlocks.MANGROVE_HEDGE.get());
+            this.dropSelf(ModBlocks.CRIMSON_HEDGE.get());
+            this.dropSelf(ModBlocks.WARPED_HEDGE.get());
+            this.dropSelf(ModBlocks.OAK_LATTICE.get());
+            this.dropSelf(ModBlocks.BIRCH_LATTICE.get());
+            this.dropSelf(ModBlocks.JUNGLE_LATTICE.get());
+            this.dropSelf(ModBlocks.DARK_OAK_LATTICE.get());
+            this.dropSelf(ModBlocks.SPRUCE_LATTICE.get());
+            this.dropSelf(ModBlocks.ACACIA_LATTICE.get());
+            this.dropSelf(ModBlocks.MANGROVE_LATTICE.get());
+            this.dropSelf(ModBlocks.CRIMSON_LATTICE.get());
+            this.dropSelf(ModBlocks.WARPED_LATTICE.get());
+            this.dropSelf(ModBlocks.OAK_LOGS.get());
+            this.dropSelf(ModBlocks.BIRCH_LOGS.get());
+            this.dropSelf(ModBlocks.JUNGLE_LOGS.get());
+            this.dropSelf(ModBlocks.DARK_OAK_LOGS.get());
+            this.dropSelf(ModBlocks.SPRUCE_LOGS.get());
+            this.dropSelf(ModBlocks.ACACIA_LOGS.get());
+            this.dropSelf(ModBlocks.MANGROVE_LOGS.get());
+            this.dropSelf(ModBlocks.CRIMSON_LOGS.get());
+            this.dropSelf(ModBlocks.WARPED_LOGS.get());
+            this.dropSelf(ModBlocks.PRIMITIVE_GRILL.get());
+            this.dropSelf(ModBlocks.CUTTING_LOG.get());
+            this.dropSelf(ModBlocks.STONE_ANVIL.get());
+            this.dropSelf(ModBlocks.OAK_DRYING_RACK.get());
+            this.dropSelf(ModBlocks.BIRCH_DRYING_RACK.get());
+            this.dropSelf(ModBlocks.JUNGLE_DRYING_RACK.get());
+            this.dropSelf(ModBlocks.DARK_OAK_DRYING_RACK.get());
+            this.dropSelf(ModBlocks.SPRUCE_DRYING_RACK.get());
+            this.dropSelf(ModBlocks.ACACIA_DRYING_RACK.get());
+            this.dropSelf(ModBlocks.MANGROVE_DRYING_RACK.get());
+            this.dropSelf(ModBlocks.CRIMSON_DRYING_RACK.get());
+            this.dropSelf(ModBlocks.WARPED_DRYING_RACK.get());
+            this.dropSelf(ModBlocks.KILN.get());
+            this.dropSelf(ModBlocks.OAK_SHELF.get());
+            this.dropSelf(ModBlocks.BIRCH_SHELF.get());
+            this.dropSelf(ModBlocks.JUNGLE_SHELF.get());
+            this.dropSelf(ModBlocks.DARK_OAK_SHELF.get());
+            this.dropSelf(ModBlocks.SPRUCE_SHELF.get());
+            this.dropSelf(ModBlocks.ACACIA_SHELF.get());
+            this.dropSelf(ModBlocks.MANGROVE_SHELF.get());
+            this.dropSelf(ModBlocks.CRIMSON_SHELF.get());
+            this.dropSelf(ModBlocks.WARPED_SHELF.get());
+            this.dropSelf(ModBlocks.STRAW_BLOCK.get());
         }
 
     }
 
-    private static class ModMineableTagProvider extends FabricTagProvider<Block> {
-        public ModMineableTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
-            super(output, RegistryKeys.BLOCK, completableFuture);
+    private static class ModMineableTagProvider extends BlockTagsProvider {
+        public ModMineableTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> completableFuture, ExistingFileHelper existingFileHelper) {
+            super(output, completableFuture, PrimalStage.MOD_ID, existingFileHelper);
         }
 
         @Override
-        protected void configure(RegistryWrapper.WrapperLookup arg) {
-            getOrCreateTagBuilder(BlockTags.AXE_MINEABLE)
-                    .add(ModBlocks.BUSH_BLOCK)
-                    .add(ModBlocks.TWIGS_BLOCK)
-                    .add(ModBlocks.CHARCOAL_LOG)
-                    .add(ModBlocks.OAK_HEDGE)
-                    .add(ModBlocks.BIRCH_HEDGE)
-                    .add(ModBlocks.JUNGLE_HEDGE)
-                    .add(ModBlocks.DARK_OAK_HEDGE)
-                    .add(ModBlocks.SPRUCE_HEDGE)
-                    .add(ModBlocks.ACACIA_HEDGE)
-                    .add(ModBlocks.MANGROVE_HEDGE)
-                    .add(ModBlocks.CRIMSON_HEDGE)
-                    .add(ModBlocks.WARPED_HEDGE)
-                    .add(ModBlocks.OAK_LATTICE)
-                    .add(ModBlocks.BIRCH_LATTICE)
-                    .add(ModBlocks.JUNGLE_LATTICE)
-                    .add(ModBlocks.DARK_OAK_LATTICE)
-                    .add(ModBlocks.SPRUCE_LATTICE)
-                    .add(ModBlocks.ACACIA_LATTICE)
-                    .add(ModBlocks.MANGROVE_LATTICE)
-                    .add(ModBlocks.CRIMSON_LATTICE)
-                    .add(ModBlocks.WARPED_LATTICE)
-                    .add(ModBlocks.OAK_LOGS)
-                    .add(ModBlocks.BIRCH_LOGS)
-                    .add(ModBlocks.JUNGLE_LOGS)
-                    .add(ModBlocks.DARK_OAK_LOGS)
-                    .add(ModBlocks.SPRUCE_LOGS)
-                    .add(ModBlocks.ACACIA_LOGS)
-                    .add(ModBlocks.MANGROVE_LOGS)
-                    .add(ModBlocks.CRIMSON_LOGS)
-                    .add(ModBlocks.WARPED_LOGS)
-                    .add(ModBlocks.CUTTING_LOG)
-                    .add(ModBlocks.OAK_DRYING_RACK)
-                    .add(ModBlocks.BIRCH_DRYING_RACK)
-                    .add(ModBlocks.JUNGLE_DRYING_RACK)
-                    .add(ModBlocks.DARK_OAK_DRYING_RACK)
-                    .add(ModBlocks.SPRUCE_DRYING_RACK)
-                    .add(ModBlocks.ACACIA_DRYING_RACK)
-                    .add(ModBlocks.MANGROVE_DRYING_RACK)
-                    .add(ModBlocks.CRIMSON_DRYING_RACK)
-                    .add(ModBlocks.WARPED_DRYING_RACK)
-                    .add(ModBlocks.OAK_SHELF)
-                    .add(ModBlocks.BIRCH_SHELF)
-                    .add(ModBlocks.JUNGLE_SHELF)
-                    .add(ModBlocks.DARK_OAK_SHELF)
-                    .add(ModBlocks.SPRUCE_SHELF)
-                    .add(ModBlocks.ACACIA_SHELF)
-                    .add(ModBlocks.MANGROVE_SHELF)
-                    .add(ModBlocks.CRIMSON_SHELF)
-                    .add(ModBlocks.WARPED_SHELF);
+        protected void addTags(HolderLookup.Provider arg) {
+            this.tag(BlockTags.MINEABLE_WITH_AXE)
+                    .add(ModBlocks.BUSH_BLOCK.get())
+                    .add(ModBlocks.TWIGS_BLOCK.get())
+                    .add(ModBlocks.CHARCOAL_LOG.get())
+                    .add(ModBlocks.OAK_HEDGE.get())
+                    .add(ModBlocks.BIRCH_HEDGE.get())
+                    .add(ModBlocks.JUNGLE_HEDGE.get())
+                    .add(ModBlocks.DARK_OAK_HEDGE.get())
+                    .add(ModBlocks.SPRUCE_HEDGE.get())
+                    .add(ModBlocks.ACACIA_HEDGE.get())
+                    .add(ModBlocks.MANGROVE_HEDGE.get())
+                    .add(ModBlocks.CRIMSON_HEDGE.get())
+                    .add(ModBlocks.WARPED_HEDGE.get())
+                    .add(ModBlocks.OAK_LATTICE.get())
+                    .add(ModBlocks.BIRCH_LATTICE.get())
+                    .add(ModBlocks.JUNGLE_LATTICE.get())
+                    .add(ModBlocks.DARK_OAK_LATTICE.get())
+                    .add(ModBlocks.SPRUCE_LATTICE.get())
+                    .add(ModBlocks.ACACIA_LATTICE.get())
+                    .add(ModBlocks.MANGROVE_LATTICE.get())
+                    .add(ModBlocks.CRIMSON_LATTICE.get())
+                    .add(ModBlocks.WARPED_LATTICE.get())
+                    .add(ModBlocks.OAK_LOGS.get())
+                    .add(ModBlocks.BIRCH_LOGS.get())
+                    .add(ModBlocks.JUNGLE_LOGS.get())
+                    .add(ModBlocks.DARK_OAK_LOGS.get())
+                    .add(ModBlocks.SPRUCE_LOGS.get())
+                    .add(ModBlocks.ACACIA_LOGS.get())
+                    .add(ModBlocks.MANGROVE_LOGS.get())
+                    .add(ModBlocks.CRIMSON_LOGS.get())
+                    .add(ModBlocks.WARPED_LOGS.get())
+                    .add(ModBlocks.CUTTING_LOG.get())
+                    .add(ModBlocks.OAK_DRYING_RACK.get())
+                    .add(ModBlocks.BIRCH_DRYING_RACK.get())
+                    .add(ModBlocks.JUNGLE_DRYING_RACK.get())
+                    .add(ModBlocks.DARK_OAK_DRYING_RACK.get())
+                    .add(ModBlocks.SPRUCE_DRYING_RACK.get())
+                    .add(ModBlocks.ACACIA_DRYING_RACK.get())
+                    .add(ModBlocks.MANGROVE_DRYING_RACK.get())
+                    .add(ModBlocks.CRIMSON_DRYING_RACK.get())
+                    .add(ModBlocks.WARPED_DRYING_RACK.get())
+                    .add(ModBlocks.OAK_SHELF.get())
+                    .add(ModBlocks.BIRCH_SHELF.get())
+                    .add(ModBlocks.JUNGLE_SHELF.get())
+                    .add(ModBlocks.DARK_OAK_SHELF.get())
+                    .add(ModBlocks.SPRUCE_SHELF.get())
+                    .add(ModBlocks.ACACIA_SHELF.get())
+                    .add(ModBlocks.MANGROVE_SHELF.get())
+                    .add(ModBlocks.CRIMSON_SHELF.get())
+                    .add(ModBlocks.WARPED_SHELF.get());
 
-            getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE)
-                    .add(ModBlocks.PEBBLE_BLOCK)
-                    .add(ModBlocks.PRIMITIVE_GRILL)
-                    .add(ModBlocks.KILN_BRICKS)
-                    .add(ModBlocks.KILN)
-                    .add(ModBlocks.STONE_ANVIL);
+            tag(BlockTags.MINEABLE_WITH_PICKAXE)
+                    .add(ModBlocks.PEBBLE_BLOCK.get())
+                    .add(ModBlocks.PRIMITIVE_GRILL.get())
+                    .add(ModBlocks.KILN_BRICKS.get())
+                    .add(ModBlocks.KILN.get())
+                    .add(ModBlocks.STONE_ANVIL.get());
 
-            getOrCreateTagBuilder(BlockTags.SHOVEL_MINEABLE)
-                    .add(ModBlocks.SALT_BLOCK);
+            tag(BlockTags.MINEABLE_WITH_SHOVEL)
+                    .add(ModBlocks.SALT_BLOCK.get());
         }
     }
 
-    private static class ModBiomeTagProvider extends FabricTagProvider<Biome> {
+    private static class ModBiomeTagProvider extends BiomeTagsProvider {
 
-        public ModBiomeTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
-            super(output, RegistryKeys.BIOME, completableFuture);
+        public ModBiomeTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> completableFuture) {
+            super(output, completableFuture);
         }
 
         @Override
-        protected void configure(RegistryWrapper.WrapperLookup arg) {
-            getOrCreateTagBuilder(ModTags.ALLOWS_BUSH_SPAWN)
-                    .add(BiomeKeys.PLAINS)
-                    .add(BiomeKeys.BIRCH_FOREST)
-                    .add(BiomeKeys.DARK_FOREST)
-                    .add(BiomeKeys.FLOWER_FOREST)
-                    .add(BiomeKeys.MEADOW)
-                    .add(BiomeKeys.FOREST)
-                    .add(BiomeKeys.SAVANNA)
-                    .add(BiomeKeys.TAIGA)
-                    .add(BiomeKeys.OLD_GROWTH_BIRCH_FOREST)
-                    .add(BiomeKeys.OLD_GROWTH_PINE_TAIGA)
-                    .add(BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA);
+        protected void addTags(HolderLookup.Provider arg) {
+            tag(ModTags.ALLOWS_BUSH_SPAWN)
+                    .add(Biomes.PLAINS)
+                    .add(Biomes.BIRCH_FOREST)
+                    .add(Biomes.DARK_FOREST)
+                    .add(Biomes.FLOWER_FOREST)
+                    .add(Biomes.MEADOW)
+                    .add(Biomes.FOREST)
+                    .add(Biomes.SAVANNA)
+                    .add(Biomes.TAIGA)
+                    .add(Biomes.OLD_GROWTH_BIRCH_FOREST)
+                    .add(Biomes.OLD_GROWTH_PINE_TAIGA)
+                    .add(Biomes.OLD_GROWTH_SPRUCE_TAIGA);
         }
     }
 
-    private static class ModItemTagProvider extends FabricTagProvider<Item> {
-
-        public ModItemTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture) {
-            super(output, RegistryKeys.ITEM, completableFuture);
+    private static class ModItemTagProvider extends ItemTagsProvider {
+        public ModItemTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> completableFuture, CompletableFuture<TagLookup<Block>> completableFuture2) {
+            super(output, completableFuture, completableFuture2);
         }
 
         @Override
-        protected void configure(RegistryWrapper.WrapperLookup arg) {
-            getOrCreateTagBuilder(ModTags.MALLETS)
-                    .add(ModItems.FLINT_MALLET);
+        protected void addTags(HolderLookup.Provider arg) {
+            tag(ModTags.MALLETS)
+                    .add(ModItems.FLINT_MALLET.get());
 
-            getOrCreateTagBuilder(ModTags.LOGS)
-                    .add(Item.fromBlock(ModBlocks.OAK_LOGS))
-                    .add(Item.fromBlock(ModBlocks.ACACIA_LOGS))
-                    .add(Item.fromBlock(ModBlocks.SPRUCE_LOGS))
-                    .add(Item.fromBlock(ModBlocks.JUNGLE_LOGS))
-                    .add(Item.fromBlock(ModBlocks.DARK_OAK_LOGS))
-                    .add(Item.fromBlock(ModBlocks.BIRCH_LOGS))
-                    .add(Item.fromBlock(ModBlocks.MANGROVE_LOGS))
-                    .add(Item.fromBlock(ModBlocks.CRIMSON_LOGS))
-                    .add(Item.fromBlock(ModBlocks.WARPED_LOGS));
+            tag(ModTags.LOGS)
+                    .add(Item.byBlock(ModBlocks.OAK_LOGS.get()))
+                    .add(Item.byBlock(ModBlocks.ACACIA_LOGS.get()))
+                    .add(Item.byBlock(ModBlocks.SPRUCE_LOGS.get()))
+                    .add(Item.byBlock(ModBlocks.JUNGLE_LOGS.get()))
+                    .add(Item.byBlock(ModBlocks.DARK_OAK_LOGS.get()))
+                    .add(Item.byBlock(ModBlocks.BIRCH_LOGS.get()))
+                    .add(Item.byBlock(ModBlocks.MANGROVE_LOGS.get()))
+                    .add(Item.byBlock(ModBlocks.CRIMSON_LOGS.get()))
+                    .add(Item.byBlock(ModBlocks.WARPED_LOGS.get()));
 
-            getOrCreateTagBuilder(ModTags.BARK)
-                    .add(ModItems.OAK_BARK)
-                    .add(ModItems.ACACIA_BARK)
-                    .add(ModItems.SPRUCE_BARK)
-                    .add(ModItems.JUNGLE_BARK)
-                    .add(ModItems.DARK_OAK_BARK)
-                    .add(ModItems.BIRCH_BARK)
-                    .add(ModItems.MANGROVE_BARK);
+            tag(ModTags.BARK)
+                    .add(ModItems.OAK_BARK.get())
+                    .add(ModItems.ACACIA_BARK.get())
+                    .add(ModItems.SPRUCE_BARK.get())
+                    .add(ModItems.JUNGLE_BARK.get())
+                    .add(ModItems.DARK_OAK_BARK.get())
+                    .add(ModItems.BIRCH_BARK.get())
+                    .add(ModItems.MANGROVE_BARK.get());
         }
     }
 }

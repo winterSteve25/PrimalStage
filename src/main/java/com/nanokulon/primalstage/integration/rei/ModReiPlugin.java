@@ -19,10 +19,10 @@ import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.util.EntryStacks;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ModReiPlugin implements REIClientPlugin {
 
     public static final CategoryIdentifier<CuttingRecipeDisplay> CUTTING = CategoryIdentifier.of(PrimalStage.MOD_ID, "cutting");
@@ -34,27 +34,27 @@ public class ModReiPlugin implements REIClientPlugin {
     @Override
     public void registerCategories(CategoryRegistry registry) {
         registry.add(new CuttingRecipeCategory(), new DryingRecipeCategory(), new GrillRecipeCategory(), new ForgingRecipeCategory(), new KilnRecipeCategory());
-        registry.addWorkstations(CUTTING, EntryStacks.of(ModBlocks.CUTTING_LOG));
-        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.OAK_DRYING_RACK));
-        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.BIRCH_DRYING_RACK));
-        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.JUNGLE_DRYING_RACK));
-        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.SPRUCE_DRYING_RACK));
-        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.DARK_OAK_DRYING_RACK));
-        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.ACACIA_DRYING_RACK));
-        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.MANGROVE_DRYING_RACK));
-        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.CRIMSON_DRYING_RACK));
-        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.WARPED_DRYING_RACK));
-        registry.addWorkstations(GRILL, EntryStacks.of(ModBlocks.PRIMITIVE_GRILL));
-        registry.addWorkstations(FORGING, EntryStacks.of(ModBlocks.STONE_ANVIL));
-        registry.addWorkstations(KILN, EntryStacks.of(ModBlocks.KILN));
+        registry.addWorkstations(CUTTING, EntryStacks.of(ModBlocks.CUTTING_LOG.get()));
+        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.OAK_DRYING_RACK.get()));
+        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.BIRCH_DRYING_RACK.get()));
+        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.JUNGLE_DRYING_RACK.get()));
+        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.SPRUCE_DRYING_RACK.get()));
+        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.DARK_OAK_DRYING_RACK.get()));
+        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.ACACIA_DRYING_RACK.get()));
+        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.MANGROVE_DRYING_RACK.get()));
+        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.CRIMSON_DRYING_RACK.get()));
+        registry.addWorkstations(DRYING, EntryStacks.of(ModBlocks.WARPED_DRYING_RACK.get()));
+        registry.addWorkstations(GRILL, EntryStacks.of(ModBlocks.PRIMITIVE_GRILL.get()));
+        registry.addWorkstations(FORGING, EntryStacks.of(ModBlocks.STONE_ANVIL.get()));
+        registry.addWorkstations(KILN, EntryStacks.of(ModBlocks.KILN.get()));
     }
 
     @Override
     public void registerDisplays(DisplayRegistry registry) {
-        registry.registerRecipeFiller(CuttingRecipe.class, ModRecipes.CUTTING, CuttingRecipeDisplay::new);
-        registry.registerRecipeFiller(DryingRecipe.class, ModRecipes.DRYING, DryingRecipeDisplay::new);
-        registry.registerRecipeFiller(GrillRecipe.class, ModRecipes.GRILL, GrillRecipeDisplay::new);
-        registry.registerRecipeFiller(ForgingRecipe.class, ModRecipes.FORGING, ForgingRecipeDisplay::new);
-        registry.registerRecipeFiller(KilnRecipe.class, ModRecipes.KILN, KilnRecipeDisplay::new);
+        registry.registerRecipeFiller(CuttingRecipe.class, ModRecipes.CUTTING.get(), CuttingRecipeDisplay::new);
+        registry.registerRecipeFiller(DryingRecipe.class, ModRecipes.DRYING.get(), DryingRecipeDisplay::new);
+        registry.registerRecipeFiller(GrillRecipe.class, ModRecipes.GRILL.get(), GrillRecipeDisplay::new);
+        registry.registerRecipeFiller(ForgingRecipe.class, ModRecipes.FORGING.get(), ForgingRecipeDisplay::new);
+        registry.registerRecipeFiller(KilnRecipe.class, ModRecipes.KILN.get(), KilnRecipeDisplay::new);
     }
 }

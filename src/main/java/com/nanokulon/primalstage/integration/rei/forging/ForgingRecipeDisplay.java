@@ -8,21 +8,22 @@ import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.display.basic.BasicDisplay;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ForgingRecipeDisplay extends BasicDisplay {
 
     private final EntryIngredient toolInput;
 
     public ForgingRecipeDisplay(ForgingRecipe recipe) {
         super(EntryIngredients.ofIngredients(recipe.getIngredients()), EntryIngredients.ofIngredients(recipe.getOutputIngredients()));
-        this.toolInput = EntryIngredients.ofIngredient(Ingredient.fromTag(ModTags.MALLETS));
+        this.toolInput = EntryIngredients.ofIngredient(Ingredient.of(ModTags.MALLETS));
     }
 
     @Override
