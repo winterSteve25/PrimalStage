@@ -56,9 +56,9 @@ public class ShelfBlock extends BaseEntityBlock implements EntityBlock {
         Direction direction = state.getValue(FACING).getOpposite();
         int slot;
         if (direction.equals(Direction.NORTH) || direction.equals(Direction.SOUTH)) {
-            slot = getSlot((hit.getBlockPos().getX() % 1), (hit.getBlockPos().getY() % 1), direction);
+            slot = getSlot((hit.getLocation().x() % 1), (hit.getLocation().y() % 1), direction);
         } else {
-            slot = getSlot((hit.getBlockPos().getZ() % 1), (hit.getBlockPos().getY() % 1), direction);
+            slot = getSlot((hit.getLocation().z() % 1), (hit.getLocation().y() % 1), direction);
         }
         if(player.isShiftKeyDown() && blockEntity instanceof ShelfBlockEntity){
             if(!world.isClientSide && ((ShelfBlockEntity) blockEntity).getItem(player, slot)){

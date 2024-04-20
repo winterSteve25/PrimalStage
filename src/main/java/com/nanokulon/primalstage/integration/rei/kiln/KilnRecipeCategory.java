@@ -15,7 +15,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-
 import java.text.DecimalFormat;
 import java.util.List;
 

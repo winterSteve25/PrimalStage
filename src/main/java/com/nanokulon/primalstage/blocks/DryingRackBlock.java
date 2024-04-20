@@ -49,17 +49,17 @@ public class DryingRackBlock extends BaseEntityBlock implements EntityBlock  {
 
     @Override
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        ItemStack itemStack;
-        DryingRackBlockEntity dryingRackBlockEntity;
+        ItemStack itemStack = player.getItemInHand(hand);
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        Optional<DryingRecipe> optional;
-        if(!(blockEntity instanceof DryingRackBlockEntity)){
+
+        if(!(blockEntity instanceof DryingRackBlockEntity dryingRackBE)){
             return InteractionResult.CONSUME;
         }
         if(!(hit.getDirection() == Direction.UP)){
             return InteractionResult.CONSUME;
         }
-        int slot = SlotUtils.getSlot((hit.getBlockPos().getX() % 1), (hit.getBlockPos().getZ() % 1));
+
+        int slot = SlotUtils.getSlot((hit.getLocation().x() % 1), (hit.getLocation().z() % 1));
         if(player.isShiftKeyDown()){
             if(!world.isClientSide && ((DryingRackBlockEntity) blockEntity).getItem(player, slot)){
                 world.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1.0f, 0.8f + world.random.nextFloat() * 0.4f);
@@ -67,8 +67,11 @@ public class DryingRackBlock extends BaseEntityBlock implements EntityBlock  {
             }
             return InteractionResult.CONSUME;
         }
-        if ((optional = (dryingRackBlockEntity = (DryingRackBlockEntity) blockEntity).getRecipeFor(itemStack = player.getItemInHand(hand))).isPresent()) {
-            if (!world.isClientSide && dryingRackBlockEntity.addItem(player.getAbilities().instabuild ? itemStack.copy() : itemStack, optional.get().getCookingTime(), slot)) {
+
+        Optional<DryingRecipe> recipe = dryingRackBE.getRecipeFor(itemStack);
+
+        if (recipe.isPresent()) {
+            if (!world.isClientSide && dryingRackBE.addItem(player.getAbilities().instabuild ? itemStack.copy() : itemStack, recipe.get().getCookingTime(), slot)) {
                 return InteractionResult.SUCCESS;
             }
             return InteractionResult.CONSUME;

@@ -1,0 +1,4 @@
+// 1.20.1	2024-04-20T14:37:50.571700429	Tags for minecraft:block mod id primalstage
+ac7353bf831c2bf3fe00cd174f807c71e76dea9b data/minecraft/tags/blocks/mineable/axe.json
+8022eae807cf33e128066fa809f675634b78231c data/minecraft/tags/blocks/mineable/pickaxe.json
+fb8efc9ba46eb94f8d8a6a65f2fee92750588371 data/minecraft/tags/blocks/mineable/shovel.json

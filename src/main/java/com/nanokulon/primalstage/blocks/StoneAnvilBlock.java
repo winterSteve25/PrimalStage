@@ -5,6 +5,10 @@ import com.nanokulon.primalstage.init.ModBlockEntities;
 import com.nanokulon.primalstage.init.ModTags;
 import com.nanokulon.primalstage.recipes.ForgingRecipe;
 
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -70,7 +74,18 @@ public class StoneAnvilBlock extends BaseEntityBlock {
         if(hand.equals(InteractionHand.MAIN_HAND) && itemHeld.is(ModTags.MALLETS)){
             if(!world.isClientSide && stoneAnvilBlockEntity.addHit()){
                 itemHeld.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(hand));
-                world.playSound(null, pos, SoundEvents.WOOD_BREAK, SoundSource.BLOCKS, 1.0f, 0.8f + world.random.nextFloat() * 0.4f);
+                ((ServerLevel) world).sendParticles(
+                        new ItemParticleOption(ParticleTypes.ITEM, stoneAnvilBlockEntity.getItemsBeingCutting().get(0)),
+                        pos.getX(),
+                        pos.getY(),
+                        pos.getZ(),
+                        15,
+                       -0.5,
+                        0.5,
+                        -0.5,
+                        0.2
+                );
+                world.playSound(null, pos, SoundEvents.STONE_HIT, SoundSource.BLOCKS, 1.0f, 0.8f + world.random.nextFloat() * 0.4f);
                 return InteractionResult.SUCCESS;
             }
             return InteractionResult.PASS;

@@ -84,7 +84,7 @@ public class PrimitiveGrillBlock extends BaseEntityBlock implements EntityBlock 
         if(!(hit.getDirection() == Direction.UP)){
             return InteractionResult.CONSUME;
         }
-        int slot = SlotUtils.getSlot((hit.getBlockPos().getX() % 1), (hit.getBlockPos().getZ() % 1));
+        int slot = SlotUtils.getSlot((hit.getLocation().x() % 1), (hit.getLocation().x() % 1));
         if(player.isShiftKeyDown()){
             if(!world.isClientSide && ((PrimitiveGrillBlockEntity) blockEntity).getItem(player, slot)){
                 world.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.BLOCKS, 1.0f, 0.8f + world.random.nextFloat() * 0.4f);

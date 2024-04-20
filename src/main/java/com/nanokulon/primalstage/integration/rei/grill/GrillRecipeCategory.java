@@ -1,6 +1,5 @@
 package com.nanokulon.primalstage.integration.rei.grill;
 
-import com.nanokulon.primalstage.PrimalStage;
 import com.nanokulon.primalstage.init.ModBlocks;
 import com.nanokulon.primalstage.integration.rei.ModReiPlugin;
 import me.shedaniel.math.Point;

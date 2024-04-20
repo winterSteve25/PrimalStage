@@ -1,6 +1,5 @@
 package com.nanokulon.primalstage.integration.rei.drying;
 
-import com.nanokulon.primalstage.PrimalStage;
 import com.nanokulon.primalstage.init.ModBlocks;
 import com.nanokulon.primalstage.integration.rei.ModReiPlugin;
 import me.shedaniel.math.Point;
@@ -12,7 +11,6 @@ import me.shedaniel.rei.api.client.registry.display.DisplayCategory;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 

@@ -19,10 +19,12 @@ import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.util.EntryStacks;
+import me.shedaniel.rei.forge.REIPluginClient;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
+@REIPluginClient
 public class ModReiPlugin implements REIClientPlugin {
 
     public static final CategoryIdentifier<CuttingRecipeDisplay> CUTTING = CategoryIdentifier.of(PrimalStage.MOD_ID, "cutting");
