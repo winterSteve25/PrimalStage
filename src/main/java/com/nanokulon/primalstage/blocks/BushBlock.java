@@ -59,7 +59,7 @@ public class BushBlock extends Block implements BonemealableBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
@@ -86,7 +86,7 @@ public class BushBlock extends Block implements BonemealableBlock {
             return InteractionResult.PASS;
         }
         if (i > 0) {
-            BushBlock.popResource(world, pos, new ItemStack(ModItems.BLUEBERRY, 1));
+            BushBlock.popResource(world, pos, new ItemStack(ModItems.BLUEBERRY.get(), 1));
             world.playSound(null, pos, SoundEvents.SWEET_BERRY_BUSH_BREAK, SoundSource.BLOCKS, 1.0f, 0.8f + world.random.nextFloat() * 0.4f);
             BlockState blockState = state.setValue(AGE, 0);
             world.setBlock(pos, blockState, Block.UPDATE_CLIENTS);
